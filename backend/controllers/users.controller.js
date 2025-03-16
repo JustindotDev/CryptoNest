@@ -24,12 +24,18 @@ export const getUser = async (req, res) =>{
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "User not found" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user) {
+      return res.status(400).json({ field: "email", message: "The email address you entered is not associated with an account." });
+    }
 
-    const token = jwt.sign({ id: user._id }, "your_secret_key", { expiresIn: "1h" });
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+      return res.status(400).json({ field: "password", message: "The password you entered is incorrect. Please try again." });
+    }
+
+  const token = jwt.sign({ id: user._id }, "your_secret_key", { expiresIn: "1h" });
 
     res.json({
       message: "Login successful",

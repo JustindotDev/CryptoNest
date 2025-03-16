@@ -11,7 +11,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react';
-import { useOrderStore } from "../orders/order.js";
+import { useOrderStore } from "../orders/order.jsx";
 import RealTimePnL from "../components/PnL.jsx";
 
 const Assets = () => {
