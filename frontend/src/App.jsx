@@ -24,7 +24,7 @@ function App() {
           minH={"100vh"} 
           theme={theme} 
           sx={{ 
-            background: "linear-gradient(to bottom, rgb(1, 3, 20) 60%, rgb(9, 8, 64))",
+            background: "linear-gradient(to bottom, rgb(1, 3, 20), rgb(9, 8, 64))",
           }} 
           color={"white"}
         >
