@@ -1,10 +1,9 @@
-import express from 'express';
+import express from "express";
 import dotenv from "dotenv";
-import { connectDB } from './config/db.js';
+import { connectDB } from "./config/db.js";
 import cors from "cors";
-import orderRoutes from './routes/orders.routes.js';
-import userRoutes from './routes/user.routes.js';
-import loginRoutes from './routes/userLogin.routes.js';
+import orderRoutes from "./routes/orders.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 dotenv.config();
 
@@ -16,9 +15,8 @@ app.use(express.json(), cors());
 
 app.use("/api/orders/", orderRoutes);
 app.use("/api/users/", userRoutes);
-app.use("/api/login/", loginRoutes);
 
-app.listen(PORT, () =>  {
-    connectDB();
-    console.log('Server started at http://localhost:' + PORT);
+app.listen(PORT, () => {
+  connectDB();
+  console.log("Server started at http://localhost:" + PORT);
 });
