@@ -18,11 +18,19 @@ const Accounts = () => {
           <Box paddingTop={"90px"}>
             <Box display={"flex"}>
               <Image src="./src/assets/logo.png" height={"120px"} />
-              <Heading pt={"35px"} size={"2xl"} fontFamily={"Montserrat, sans-serif"}>
+              <Heading
+                pt={"35px"}
+                size={"2xl"}
+                fontFamily={"Montserrat, sans-serif"}
+              >
                 Crypto Nest
               </Heading>
             </Box>
-            <Image src="./src/assets/bglogo.png" height={"200px"} pl={"150px"} />
+            <Image
+              src="./src/assets/bglogo.png"
+              height={"200px"}
+              pl={"150px"}
+            />
           </Box>
         </Flex>
         <Flex width={"50%"} height={"560px"} justifyContent={"center"}>

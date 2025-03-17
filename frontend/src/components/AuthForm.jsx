@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { signup, login } from "../orders/AuthService"; // Importing API functions
+import { signup, login } from "../orders/AuthService.jsx"; // Importing API functions
 import styled from "styled-components";
 import { RiErrorWarningLine } from "react-icons/ri";
 
@@ -30,6 +30,9 @@ const AuthForm = ({ action, setAction }) => {
           duration: 1500,
           isClosable: false,
         });
+        setUsername("");
+        setEmail("");
+        setPassword("");
         setAction("Log in");
       } else {
         const response = await login({ email, password });
@@ -39,7 +42,7 @@ const AuthForm = ({ action, setAction }) => {
     } catch (err) {
       if (err.response && err.response.data) {
         const { field, message } = err.response.data;
-  
+
         if (field === "email") {
           setEmailError(message);
         } else if (field === "password") {
@@ -84,7 +87,7 @@ const AuthForm = ({ action, setAction }) => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={emailError && "input-error" }
+              className={emailError && "input-error"}
             />
             {emailError && (
               <p className="error-message">
@@ -96,13 +99,14 @@ const AuthForm = ({ action, setAction }) => {
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <input
-              type="password"s
+              type="password"
+              s
               name="password"
               id="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={passwordError && "input-error" }
+              className={passwordError && "input-error"}
             />
             {passwordError && (
               <p className="error-message">
@@ -121,7 +125,9 @@ const AuthForm = ({ action, setAction }) => {
             : "Don't have an account?"}
           <a
             className="choice"
-            onClick={() => setAction(action === "Log in" ? "Create an Account" : "Log in")}
+            onClick={() =>
+              setAction(action === "Log in" ? "Create an Account" : "Log in")
+            }
           >
             {action === "Log in" ? "Sign up" : "Log in"}
           </a>
@@ -202,7 +208,7 @@ const StyledWrapper = styled.div`
     font-size: 0.75rem;
     margin-top: 1rem;
   }
-  
+
   .signup a:hover {
     text-decoration: underline rgba(167, 139, 250, 1);
   }
