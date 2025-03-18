@@ -18,6 +18,14 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    sellPrice: {
+      type: Number,
+      required: true,
+    },
+    gains: {
+      type: Number,
+      required: true,
+    },
     tokenInfo: {
       baseToken: {
         symbol: String,
