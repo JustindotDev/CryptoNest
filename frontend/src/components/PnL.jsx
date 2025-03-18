@@ -9,13 +9,16 @@ const RealTimePnL = ({ order }) => {
   // Fetch the latest token price
   const fetchLatestPrice = async () => {
     try {
-      const response = await axios.get(`https://api.dexscreener.com/latest/dex/tokens/${order.pairAddress}`);
+      const response = await axios.get(
+        `https://api.dexscreener.com/latest/dex/tokens/${order.pairAddress}`
+      );
       const latestPrice = response.data?.pairs?.[0]?.priceUsd || 0;
 
       setCurrentPrice(latestPrice);
 
       // Calculate PnL: (Current Price - Entry Price) * Tokens Bought
-      const tokensBought = order.entryPrice > 0 ? order.amountInvested / order.entryPrice : 0;
+      const tokensBought =
+        order.entryPrice > 0 ? order.amountInvested / order.entryPrice : 0;
       const updatedPnL = (latestPrice - order.entryPrice) * tokensBought;
 
       setPnL(updatedPnL);
@@ -32,8 +35,21 @@ const RealTimePnL = ({ order }) => {
   }, [order.pairAddress]); // Update if order pair changes
 
   return (
-    <Text w="14%" color={pnl > 0 ? "green" : pnl < 0 ? "red" : "gray"} fontWeight="bold">
-      {pnl === 0 ? "$0.00" : pnl > 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`}
+    <Text
+      w="14%"
+      marginLeft={"50px"}
+      color={pnl > 0 ? "green" : pnl < 0 ? "red" : "gray"}
+      fontWeight="bold"
+    >
+      {pnl === 0
+        ? "$0"
+        : pnl > 0
+        ? `+$${Number.isInteger(pnl) ? pnl.toFixed(0) : pnl.toFixed(2)}`
+        : `-$${
+            Number.isInteger(pnl)
+              ? Math.abs(pnl).toFixed(0)
+              : Math.abs(pnl).toFixed(2)
+          }`}
     </Text>
   );
 };

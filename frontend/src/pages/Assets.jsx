@@ -5,6 +5,7 @@ import {
   Divider,
   Flex,
   FormControl,
+  FormLabel,
   HStack,
   Input,
   SimpleGrid,
@@ -25,6 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { useOrderStore } from "../orders/order.jsx";
 import RealTimePnL from "../components/PnL.jsx";
+import axios from "axios";
 
 const Assets = () => {
   const [newOrder, setNewOrder] = useState({
@@ -34,13 +36,29 @@ const Assets = () => {
     amountInvested: "",
   });
 
+  const [sellPrice, setSellPrice] = useState("");
+
+  const [selectedOrder, setSelectedOrder] = useState(null); // Store selected order for closing
   const toast = useToast();
-  const { createOrders, fetchOrders, orders } = useOrderStore();
+  const {
+    createOrders,
+    fetchOrders,
+    orders,
+    remainingBalance,
+    fetchRemainingBalance,
+  } = useOrderStore();
 
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
 
+  useEffect(() => {
+    if (orders.length > 0) {
+      fetchRemainingBalance();
+    }
+  }, [orders, fetchRemainingBalance]);
+
+  // Add order Button
   const handleSubmitOrder = async () => {
     const { success, message } = await createOrders(newOrder);
     if (!success) {
@@ -71,7 +89,62 @@ const Assets = () => {
     }
   };
 
+  // Sell Button
+  const handleSellOrder = async () => {
+    if (!selectedOrder || isNaN(parseFloat(sellPrice))) {
+      toast({
+        title: "Error",
+        description: "Please enter the selling price",
+        status: "error",
+        duration: 1500,
+        isClosable: false,
+      });
+      return;
+    }
+
+    try {
+      const { data } = await axios.put(
+        `http://localhost:5000/api/orders/sell/${selectedOrder._id}`,
+        { sellPrice: parseFloat(sellPrice) } // Convert input to number
+      );
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      setSelectedOrder((prevOrder) => ({
+        ...prevOrder,
+        gains: data.order.gains,
+      }));
+
+      toast({
+        title: "Success",
+        description: "Order sold successfully!",
+        status: "success",
+        duration: 1500,
+        isClosable: false,
+      });
+
+      fetchOrders(); // Refresh orders
+      onCloseModalClose(); // Close modal
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Failed to sell order",
+        status: "error",
+        duration: 1500,
+        isClosable: false,
+      });
+    }
+  };
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isCloseModalOpen,
+    onOpen: onCloseModalOpen,
+    onClose: onCloseModalClose,
+  } = useDisclosure();
 
   return (
     <Container maxW={"1400px"} px={4}>
@@ -108,17 +181,17 @@ const Assets = () => {
             >
               Assets
             </Text>
-            <HStack width="full" justifyContent="space-between" px={"50px"}>
-              <Text w="12%" fontWeight="bold">
+            <HStack width="full" pr={"80px"} pl={"50px"}>
+              <Text w="12%" fontWeight="bold" marginRight={"70px"}>
                 Token
               </Text>
-              <Text w="12%" fontWeight="bold">
+              <Text w="12%" fontWeight="bold" marginRight={"40px"}>
                 Invested
               </Text>
-              <Text w="12%" fontWeight="bold">
+              <Text w="12%" fontWeight="bold" marginRight={"40px"}>
                 Sold
               </Text>
-              <Text w="12%" fontWeight="bold">
+              <Text w="12%" fontWeight="bold" marginRight={"40px"}>
                 Remaining
               </Text>
               <Text w="12%" fontWeight="bold">
@@ -141,12 +214,7 @@ const Assets = () => {
               <SimpleGrid spacing={5} width={"full"} paddingTop={5} px={"35px"}>
                 {orders.map((order, index) => (
                   <Box width="full" p={2}>
-                    <HStack
-                      key={index}
-                      width="full"
-                      justifyContent="space-between"
-                      paddingY={1}
-                    >
+                    <HStack key={index} width="full" paddingY={1}>
                       {/* Token Image */}
                       <Box w="12%" display="flex" alignItems="center" gap="8px">
                         {order.tokenInfo?.info?.imageUrl ? (
@@ -172,11 +240,38 @@ const Assets = () => {
                         </Text>
                       </Box>
                       {/* Amount Invested */}
-                      <Text w="10%">${parseFloat(order.amountInvested)}</Text>
-                      <Text w="9%">0</Text> {/* Placeholder for Sold */}
-                      <Text w="8%">0</Text> {/* Placeholder for Remaining */}
+                      <Text w="10%" marginLeft={"80px"}>
+                        ${parseFloat(order.amountInvested)}
+                      </Text>
+                      {/* Placeholder for Sold */}
+                      <Text w="9%" marginLeft={"30px"}>
+                        ${order.gains ? order.gains.toFixed(2) : "0"}
+                      </Text>{" "}
+                      {/* Placeholder for Remaining */}
+                      <Text w="9%" marginLeft={"70px"}>
+                        $
+                        {Number.isInteger(
+                          Number(remainingBalance[order.pairAddress])
+                        )
+                          ? Number(remainingBalance[order.pairAddress])
+                          : Number(
+                              remainingBalance[order.pairAddress] || 0
+                            ).toFixed(2)}
+                      </Text>
                       {/* Total PnL with color formatting */}
                       <RealTimePnL order={order} />
+                      <Text
+                        fontSize={"12px"}
+                        color={"rgb(8, 252, 232)"}
+                        _hover={{ color: "rgb(6, 190, 175)" }}
+                        cursor={"pointer"}
+                        onClick={() => {
+                          setSelectedOrder(order);
+                          onCloseModalOpen();
+                        }}
+                      >
+                        Close
+                      </Text>
                     </HStack>
                     <Divider borderColor="gray.700" py={2} />
                   </Box>
@@ -187,7 +282,7 @@ const Assets = () => {
         </Flex>
       </Flex>
 
-      {/* Modal */}
+      {/* Add Order Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent
@@ -210,6 +305,7 @@ const Assets = () => {
               <Input
                 bg={"gray.100"}
                 placeholder="Token Name"
+                _placeholder={{ fontSize: "14px" }}
                 name="currency"
                 type="string"
                 value={newOrder.currency}
@@ -223,6 +319,7 @@ const Assets = () => {
               <Input
                 bg={"gray.100"}
                 placeholder="CA e.g.0x727458212ca0be056d..."
+                _placeholder={{ fontSize: "14px" }}
                 name="pairAddress"
                 type="string"
                 value={newOrder.pairAddress}
@@ -235,6 +332,7 @@ const Assets = () => {
             <FormControl mt={4}>
               <Input
                 placeholder="Entry Price"
+                _placeholder={{ fontSize: "14px" }}
                 bg={"gray.100"}
                 name="entrPrice"
                 type="number"
@@ -248,6 +346,7 @@ const Assets = () => {
             <FormControl mt={4}>
               <Input
                 placeholder="Margin"
+                _placeholder={{ fontSize: "14px" }}
                 bg={"gray.100"}
                 name="margin"
                 type="number"
@@ -271,6 +370,49 @@ const Assets = () => {
               onClick={handleSubmitOrder}
             >
               Submit
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* close button Modal */}
+      <Modal isOpen={isCloseModalOpen} onClose={onCloseModalClose}>
+        <ModalOverlay />
+        <ModalContent
+          bg={"#10121d"}
+          color={"white"}
+          border={"1px solid  rgb(80, 80, 80)"}
+          borderRadius={"20px"}
+        >
+          <ModalCloseButton />
+
+          <ModalBody pb={6} fontFamily={"Nunito, sans-serif"} mt={10}>
+            <FormControl>
+              <FormLabel>Selling Price</FormLabel>
+              <Input
+                bg={"gray.100"}
+                placeholder="Enter price"
+                _placeholder={{ fontSize: "14px" }}
+                name="sellPrice"
+                type="number"
+                value={sellPrice}
+                onChange={(e) => setSellPrice(e.target.value)}
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter fontFamily={"Nunito, sans-serif"}>
+            <Button colorScheme="blue" mr={3} onClick={onCloseModalClose}>
+              Close
+            </Button>
+            <Button
+              variant="ghost"
+              bg={"white"}
+              _hover={{ bg: "gray.300" }}
+              border={"1px"}
+              borderColor={"gray.300"}
+              onClick={handleSellOrder}
+            >
+              Sell
             </Button>
           </ModalFooter>
         </ModalContent>

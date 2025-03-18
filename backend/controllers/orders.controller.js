@@ -145,7 +145,6 @@ export const getTotalPortfolio = async (req, res) => {
         `https://api.dexscreener.com/latest/dex/tokens/${order.pairAddress}`
       );
       const tokenData = dexResponse.data?.pairs?.[0];
-      console.log(tokenData);
       totalInvested += order.amountInvested;
 
       // Get the current price from tokenInfo
@@ -222,7 +221,6 @@ export const getUnrealizedPnL = async (req, res) => {
         `https://api.dexscreener.com/latest/dex/tokens/${order.pairAddress}`
       );
       const tokenData = dexResponse.data?.pairs?.[0];
-      console.log(tokenData);
       totalInvested += order.amountInvested;
 
       // Get the current price from tokenInfo
@@ -254,5 +252,83 @@ export const getPortfolioHistory = async (req, res) => {
     res.json({ success: true, history });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getRemainingBalance = async (req, res) => {
+  try {
+    // Fetch all orders
+    const orders = await Orders.find();
+
+    if (orders.length === 0) {
+      return res.json({
+        success: true,
+        remainingBalances: {},
+      });
+    }
+
+    let remainingBalances = {};
+
+    for (let order of orders) {
+      const dexResponse = await axios.get(
+        `https://api.dexscreener.com/latest/dex/tokens/${order.pairAddress}`
+      );
+      const tokenData = dexResponse.data?.pairs?.[0];
+
+      // Get the current price from tokenInfo
+      const currentPrice = tokenData?.priceUsd || 0;
+      const entryPrice = order.entryPrice;
+      const amountInvested = order.amountInvested;
+
+      // Calculate the number of tokens purchased
+      const quantityPurchased = amountInvested / entryPrice;
+
+      // Calculate PnL
+      const pnl = (currentPrice - entryPrice) * quantityPurchased;
+
+      // Calculate remaining balance for this token
+      const remainingBalance = pnl + amountInvested;
+
+      // Store the remaining balance by token pair address
+      remainingBalances[order.pairAddress] = remainingBalance.toFixed(2);
+    }
+
+    res.json({
+      success: true,
+      remainingBalances, // Return object with remaining balance per token
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getSellPrice = async (req, res) => {
+  try {
+    const { sellPrice } = req.body;
+    const order = await Orders.findById(req.params.id);
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    // Calculate PnL: (Sell Price - Entry Price) * Amount Invested
+    const pnl =
+      (sellPrice - order.entryPrice) *
+      (order.amountInvested / order.entryPrice);
+
+    // New total balance
+    const totalBalance = order.amountInvested + pnl;
+
+    // Update order
+    order.sellPrice = sellPrice;
+    order.gains = totalBalance;
+    await order.save();
+
+    res.json({ success: true, message: "Order sold", order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

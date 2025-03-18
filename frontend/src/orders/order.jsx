@@ -4,6 +4,7 @@ import axios from "axios";
 export const useOrderStore = create((set) => ({
   orders: [],
   portfolioHistory: [],
+  remainingBalance: {},
   totalInvested: 0,
   portfolioValue: 0,
   percentageChange: 0,
@@ -82,6 +83,19 @@ export const useOrderStore = create((set) => ({
       set({ portfolioHistory: response.data.history });
     } catch (error) {
       console.error("Error fetching portfolio history:", error.message);
+    }
+  },
+
+  fetchRemainingBalance: async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/orders/remaining-balance"
+      );
+      set({
+        remainingBalance: response.data.remainingBalances,
+      });
+    } catch (error) {
+      console.error("Error fetching unrealizedpnl:", error.message);
     }
   },
 }));
