@@ -27,6 +27,7 @@ import {
 import { useOrderStore } from "../orders/order.jsx";
 import RealTimePnL from "../components/PnL.jsx";
 import axios from "axios";
+import History from "../components/History.jsx";
 
 const Assets = () => {
   const [newOrder, setNewOrder] = useState({
@@ -112,11 +113,6 @@ const Assets = () => {
         throw new Error(data.message);
       }
 
-      setSelectedOrder((prevOrder) => ({
-        ...prevOrder,
-        gains: data.order.gains,
-      }));
-
       toast({
         title: "Success",
         description: "Order sold successfully!",
@@ -147,7 +143,7 @@ const Assets = () => {
   } = useDisclosure();
 
   return (
-    <Container maxW={"1400px"} px={4}>
+    <Container maxW={"1400px"}>
       <Flex flexDirection={"column"}>
         <Flex
           justifyContent={"flex-end"}
@@ -157,128 +153,140 @@ const Assets = () => {
         >
           <AddButton onClick={onOpen} />
         </Flex>
-
-        <Flex
-          fontFamily={"Nunito, sans-serif"}
-          fontSize={"15px"}
-          flexDirection={"column"}
-          alignItems={"start"}
-          bg={"#10121d"}
-          maxH={"440px"}
-          minH={"440px"}
-          maxW={"60%"}
-          borderRadius={"20px"}
-          border={"1px solid  rgb(80, 80, 80)"}
-          shadow={"2px 2px 10px rgb(49, 49, 49)"}
-        >
-          <Box w={"full"} maxW={"100%"} maxH={"100%"}>
-            <Text
-              paddingLeft={"50px"}
-              py={"10px"}
-              fontSize={{ base: "12", sm: "20" }}
-              fontFamily={"Montserrat, sans-serif"}
-              fontWeight={"700"}
-            >
-              Assets
-            </Text>
-            <HStack width="full" pr={"80px"} pl={"50px"}>
-              <Text w="12%" fontWeight="bold" marginRight={"70px"}>
-                Token
+        <Flex mt={"10px"}>
+          <Flex
+            fontFamily={"Nunito, sans-serif"}
+            fontSize={"15px"}
+            alignItems={"start"}
+            bg={"#10121d"}
+            maxH={"440px"}
+            minH={"440px"}
+            maxW={"60%"}
+            minW={"60%"}
+            borderRadius={"20px"}
+            border={"1px solid  rgb(80, 80, 80)"}
+            shadow={"2px 2px 10px rgb(49, 49, 49)"}
+          >
+            <Box w={"full"} maxW={"100%"} maxH={"100%"}>
+              <Text
+                paddingLeft={"50px"}
+                py={"10px"}
+                fontSize={{ base: "12", sm: "20" }}
+                fontFamily={"Montserrat, sans-serif"}
+                fontWeight={"700"}
+              >
+                Assets
               </Text>
-              <Text w="12%" fontWeight="bold" marginRight={"40px"}>
-                Invested
-              </Text>
-              <Text w="12%" fontWeight="bold" marginRight={"40px"}>
-                Sold
-              </Text>
-              <Text w="12%" fontWeight="bold" marginRight={"40px"}>
-                Remaining
-              </Text>
-              <Text w="12%" fontWeight="bold">
-                Total PnL
-              </Text>
-            </HStack>
-            <Divider w={"88%"} ml="40px" mt="10px" borderColor="gray.700" />
-            <Box
-              maxH="354px" // Set max height for scrollability
-              overflowY="auto"
-              w="full"
-              css={{
-                scrollbarWidth: "thin",
-                scrollbarColor: "transparent transparent", // Fully transparent initially
-                "&:hover": {
-                  scrollbarColor: "rgba(95, 92, 92, 0.5) transparent", // Visible on hover
-                },
-              }}
-            >
-              <SimpleGrid spacing={5} width={"full"} paddingTop={5} px={"35px"}>
-                {orders.map((order, index) => (
-                  <Box width="full" p={2}>
-                    <HStack key={index} width="full" paddingY={1}>
-                      {/* Token Image */}
-                      <Box w="12%" display="flex" alignItems="center" gap="8px">
-                        {order.tokenInfo?.info?.imageUrl ? (
-                          <img
-                            src={order.tokenInfo.info.imageUrl}
-                            alt={order.tokenInfo.info.imageUrl}
-                            width="40"
-                            height="40"
-                            style={{ borderRadius: "50%" }}
-                          />
-                        ) : (
-                          <Text>N/A</Text> // Show "N/A" if image is missing
-                        )}
-
-                        <Text
-                          w="full"
-                          fontSize={13}
-                          whiteSpace="nowrap"
-                          letterSpacing="-0.5px"
+              <HStack width="full" pr={"80px"} pl={"50px"}>
+                <Text w="12%" fontWeight="bold" marginRight={"70px"}>
+                  Token
+                </Text>
+                <Text w="12%" fontWeight="bold" marginRight={"40px"}>
+                  Invested
+                </Text>
+                <Text w="12%" fontWeight="bold" marginRight={"40px"}>
+                  Sold
+                </Text>
+                <Text w="12%" fontWeight="bold" marginRight={"40px"}>
+                  Remaining
+                </Text>
+                <Text w="12%" fontWeight="bold">
+                  Total PnL
+                </Text>
+              </HStack>
+              <Divider w={"88%"} ml="40px" mt="10px" borderColor="gray.700" />
+              <Box
+                maxH="354px" // Set max height for scrollability
+                overflowY="auto"
+                w="full"
+                css={{
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "transparent transparent", // Fully transparent initially
+                  "&:hover": {
+                    scrollbarColor: "rgba(95, 92, 92, 0.5) transparent", // Visible on hover
+                  },
+                }}
+              >
+                <SimpleGrid
+                  spacing={5}
+                  width={"full"}
+                  paddingTop={5}
+                  px={"35px"}
+                >
+                  {orders.map((order, index) => (
+                    <Box width="full" p={2}>
+                      <HStack key={index} width="full" paddingY={1}>
+                        {/* Token Image */}
+                        <Box
+                          w="12%"
+                          display="flex"
+                          alignItems="center"
+                          gap="8px"
                         >
-                          {order.tokenInfo?.baseToken?.symbol ||
-                            "Unknown Token"}
+                          {order.tokenInfo?.info?.imageUrl ? (
+                            <img
+                              src={order.tokenInfo.info.imageUrl}
+                              alt={order.tokenInfo.info.imageUrl}
+                              width="40"
+                              height="40"
+                              style={{ borderRadius: "50%" }}
+                            />
+                          ) : (
+                            <Text>N/A</Text> // Show "N/A" if image is missing
+                          )}
+
+                          <Text
+                            w="full"
+                            fontSize={13}
+                            whiteSpace="nowrap"
+                            letterSpacing="-0.5px"
+                          >
+                            {order.tokenInfo?.baseToken?.symbol ||
+                              "Unknown Token"}
+                          </Text>
+                        </Box>
+                        {/* Amount Invested */}
+                        <Text w="10%" marginLeft={"80px"}>
+                          ${parseFloat(order.amountInvested)}
                         </Text>
-                      </Box>
-                      {/* Amount Invested */}
-                      <Text w="10%" marginLeft={"80px"}>
-                        ${parseFloat(order.amountInvested)}
-                      </Text>
-                      {/* Placeholder for Sold */}
-                      <Text w="9%" marginLeft={"30px"}>
-                        ${order.gains ? order.gains.toFixed(2) : "0"}
-                      </Text>{" "}
-                      {/* Placeholder for Remaining */}
-                      <Text w="9%" marginLeft={"70px"}>
-                        $
-                        {Number.isInteger(
-                          Number(remainingBalance[order.pairAddress])
-                        )
-                          ? Number(remainingBalance[order.pairAddress])
-                          : Number(
-                              remainingBalance[order.pairAddress] || 0
-                            ).toFixed(2)}
-                      </Text>
-                      {/* Total PnL with color formatting */}
-                      <RealTimePnL order={order} />
-                      <Text
-                        fontSize={"12px"}
-                        color={"rgb(8, 252, 232)"}
-                        _hover={{ color: "rgb(6, 190, 175)" }}
-                        cursor={"pointer"}
-                        onClick={() => {
-                          setSelectedOrder(order);
-                          onCloseModalOpen();
-                        }}
-                      >
-                        Close
-                      </Text>
-                    </HStack>
-                    <Divider borderColor="gray.700" py={2} />
-                  </Box>
-                ))}
-              </SimpleGrid>
+                        {/* Placeholder for Sold */}
+                        <Text w="9%" marginLeft={"30px"}>
+                          ${order.gains ? order.gains.toFixed(2) : "0"}
+                        </Text>{" "}
+                        {/* Placeholder for Remaining */}
+                        <Text w="9%" marginLeft={"70px"}>
+                          $
+                          {Number.isInteger(
+                            Number(remainingBalance[order.pairAddress])
+                          )
+                            ? Number(remainingBalance[order.pairAddress])
+                            : Number(
+                                remainingBalance[order.pairAddress] || 0
+                              ).toFixed(2)}
+                        </Text>
+                        {/* Total PnL with color formatting */}
+                        <RealTimePnL order={order} />
+                        <Text
+                          fontSize={"12px"}
+                          color={"rgb(8, 252, 232)"}
+                          _hover={{ color: "rgb(6, 190, 175)" }}
+                          cursor={"pointer"}
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            onCloseModalOpen();
+                          }}
+                        >
+                          Close
+                        </Text>
+                      </HStack>
+                      <Divider borderColor="gray.700" py={2} />
+                    </Box>
+                  ))}
+                </SimpleGrid>
+              </Box>
             </Box>
-          </Box>
+          </Flex>
+          <History />
         </Flex>
       </Flex>
 

@@ -3,6 +3,7 @@ import axios from "axios";
 
 export const useOrderStore = create((set) => ({
   orders: [],
+  historyOrders: [],
   portfolioHistory: [],
   remainingBalance: {},
   totalInvested: 0,
@@ -12,7 +13,16 @@ export const useOrderStore = create((set) => ({
   fetchOrders: async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/orders");
-      set({ orders: response.data.data });
+      if (response.data.success) {
+        const ordersArray = response.data.data; // Corrected to access "data"
+
+        set({
+          orders: ordersArray.filter((order) => order.status !== "closed"), // Active orders
+          historyOrders: ordersArray.filter(
+            (order) => order.status === "closed"
+          ), // Closed orders
+        });
+      }
     } catch (error) {
       console.error("Error fetching orders:", error.message);
     }
