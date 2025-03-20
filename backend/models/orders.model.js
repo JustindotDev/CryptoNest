@@ -20,11 +20,15 @@ const orderSchema = new mongoose.Schema(
     },
     sellPrice: {
       type: Number,
-      required: true,
     },
     gains: {
       type: Number,
-      required: true,
+    },
+    totalPnl: {
+      type: Number,
+    },
+    status: {
+      type: String,
     },
     tokenInfo: {
       baseToken: {

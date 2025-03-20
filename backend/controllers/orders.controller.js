@@ -268,6 +268,7 @@ export const getRemainingBalance = async (req, res) => {
     }
 
     let remainingBalances = {};
+    let totalPnL = {};
 
     for (let order of orders) {
       const dexResponse = await axios.get(
@@ -291,11 +292,17 @@ export const getRemainingBalance = async (req, res) => {
 
       // Store the remaining balance by token pair address
       remainingBalances[order.pairAddress] = remainingBalance.toFixed(2);
+      totalPnL[order.pairAddress] = pnl.toFixed(2);
+
+      // save to database
+      order.totalPnl = pnl.toFixed(2);
+      await order.save();
     }
 
     res.json({
       success: true,
-      remainingBalances, // Return object with remaining balance per token
+      orders,
+      remainingBalances,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -324,6 +331,7 @@ export const getSellPrice = async (req, res) => {
     // Update order
     order.sellPrice = sellPrice;
     order.gains = totalBalance;
+    order.status = "closed"; // Mark as closed
     await order.save();
 
     res.json({ success: true, message: "Order sold", order });
