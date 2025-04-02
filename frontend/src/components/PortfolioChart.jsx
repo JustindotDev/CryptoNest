@@ -40,17 +40,15 @@ const PortfolioChart = () => {
         <LineChart data={portfolioHistory}>
           <XAxis
             dataKey="date"
-            tickFormatter={(date) =>
-              new Date(date).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "2-digit",
-              })
-            }
-            tick={{ fontSize: 12, fill: "white" }} // Adjust font size & color
+            tickFormatter={(date) => {
+              const d = new Date(date);
+              return `${d.getDate()}/${d.getFullYear().toString().slice(-2)}`;
+            }}
+            tick={{ fontSize: 12, fill: "white" }}
+            tickMargin={10}
           />
-          <YAxis tick={{ fontSize: 14, fill: "white" }} />
-          <Tooltip />
+          <YAxis tick={{ fontSize: 12, fill: "white" }} tickMargin={10} />
+
           <Line type="monotone" dataKey="portfolioValue" stroke="#02ff5f" />
         </LineChart>
       </ResponsiveContainer>

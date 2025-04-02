@@ -25,7 +25,7 @@ function App() {
         theme={theme}
         sx={{
           background:
-            "linear-gradient(to bottom, rgb(1, 3, 20), rgb(9, 8, 64))",
+            "radial-gradient(200% 180% at bottom, rgb(12, 9, 70),rgb(1, 3, 20) 30%)",
         }}
         color={"white"}
       >
@@ -37,7 +37,7 @@ function App() {
 
         <Routes>
           {/* Default landing page is Login */}
-          <Route path="/" element={<Accounts />} />
+          <Route path="/Signin" element={<Accounts />} />
 
           <Route
             path="/home"

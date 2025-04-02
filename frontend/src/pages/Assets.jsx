@@ -310,7 +310,9 @@ const Assets = () => {
 
           <ModalBody pb={6} fontFamily={"Nunito, sans-serif"}>
             <FormControl>
+              <FormLabel>Token</FormLabel>
               <Input
+                color={"black"}
                 bg={"gray.100"}
                 placeholder="Token Name"
                 _placeholder={{ fontSize: "14px" }}
@@ -324,7 +326,9 @@ const Assets = () => {
             </FormControl>
 
             <FormControl mt={4}>
+              <FormLabel>Contract Address</FormLabel>
               <Input
+                color={"black"}
                 bg={"gray.100"}
                 placeholder="CA e.g.0x727458212ca0be056d..."
                 _placeholder={{ fontSize: "14px" }}
@@ -338,7 +342,9 @@ const Assets = () => {
             </FormControl>
 
             <FormControl mt={4}>
+              <FormLabel>Entry Price</FormLabel>
               <Input
+                color={"black"}
                 placeholder="Entry Price"
                 _placeholder={{ fontSize: "14px" }}
                 bg={"gray.100"}
@@ -352,7 +358,9 @@ const Assets = () => {
             </FormControl>
 
             <FormControl mt={4}>
+              <FormLabel>Margin</FormLabel>
               <Input
+                color={"black"}
                 placeholder="Margin"
                 _placeholder={{ fontSize: "14px" }}
                 bg={"gray.100"}
@@ -366,7 +374,19 @@ const Assets = () => {
             </FormControl>
           </ModalBody>
           <ModalFooter fontFamily={"Nunito, sans-serif"}>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                onClose();
+                setNewOrder({
+                  currency: "",
+                  pairAddress: "",
+                  entryPrice: "",
+                  amountInvested: "",
+                });
+              }}
+            >
               Close
             </Button>
             <Button
