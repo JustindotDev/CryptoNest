@@ -15,21 +15,18 @@ const Accounts = () => {
         shadow={"2px 2px 10px rgb(49, 49, 49)"}
       >
         <Flex width={"50%"} height={"560px"} justifyContent={"center"}>
-          <Box paddingTop={"90px"}>
-            <Box display={"flex"}>
-              <Image src="./src/assets/logo.png" height={"120px"} />
-              <Heading
-                pt={"35px"}
-                size={"2xl"}
-                fontFamily={"Montserrat, sans-serif"}
-              >
-                Crypto Nest
-              </Heading>
-            </Box>
+          <Box
+            width={"full"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"end"}
+          >
             <Image
-              src="./src/assets/bglogo.png"
-              height={"200px"}
-              pl={"150px"}
+              src="./src/assets/bg.png"
+              width={"full"}
+              height={"full"}
+              borderTopLeftRadius={"20px"}
+              borderBottomLeftRadius={"20px"}
             />
           </Box>
         </Flex>
