@@ -5,8 +5,6 @@ A personal project for hassle-free monitoring of cryptocurrency holdings across 
 #TODO:
 **Backend**
 
-- add cookie-parser
-- add protected route
 - delete the update and delete orders in the controller and routes
 
   **Frontend**
