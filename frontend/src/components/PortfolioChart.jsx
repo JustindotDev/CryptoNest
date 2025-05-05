@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useOrderStore } from "../orders/order.jsx";
+import { useOrderStore } from "../store/order.jsx";
 import {
   LineChart,
   Line,
