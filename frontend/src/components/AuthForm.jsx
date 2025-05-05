@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { signup, login } from "../orders/AuthService.jsx"; // Importing API functions
+// import { signup, login } from "../orders/AuthService.jsx";
 import styled from "styled-components";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { IoPerson } from "react-icons/io5";

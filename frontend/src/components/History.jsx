@@ -7,7 +7,7 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { useOrderStore } from "../orders/order.jsx";
+import { useOrderStore } from "../store/order.jsx";
 import { useEffect } from "react";
 
 const History = () => {

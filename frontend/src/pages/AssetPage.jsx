@@ -24,7 +24,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { useOrderStore } from "../orders/order.jsx";
+import { useOrderStore } from "../store/order.jsx";
 import RealTimePnL from "../components/PnL.jsx";
 import axios from "axios";
 import History from "../components/History.jsx";
