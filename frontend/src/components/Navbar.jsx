@@ -4,50 +4,24 @@ import {
   Flex,
   HStack,
   Text,
-  useToast,
   Spinner,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader.jsx";
 import { LogOut } from "lucide-react";
+import { useAuthStore } from "../store/useAuthStore.js";
 
 const Navbar = () => {
-  const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
-  const toast = useToast();
+  const { isLoggingOut, logout } = useAuthStore();
 
   const handleLogout = () => {
-    setLoading(true);
-    try {
-      localStorage.removeItem("token"); // Clear authentication token
-      setTimeout(() => {
-        toast({
-          title: "Success",
-          description: "Logged out Successfully!",
-          status: "success",
-          duration: 1500,
-          isClosable: false,
-        });
-        navigate("/Signin");
-      }, 1000);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong while logging out.",
-        status: "error",
-        duration: 1500,
-        isClosable: false,
-      });
-    } finally {
-      setTimeout(() => setLoading(false), 1000); // Stop loading in all cases
-    }
+    logout(navigate);
   };
 
   return (
     <Container maxW={"1400px"} px={4}>
-      {loading && <Loader />}
+      {isLoggingOut && <Loader />}
       <Flex
         h={"75px"}
         alignItems={"center"}
@@ -134,7 +108,7 @@ const Navbar = () => {
             gap={2}
             transition="all 0.2s ease-in-out"
           >
-            {loading ? (
+            {isLoggingOut ? (
               <Spinner size="sm" color="white" />
             ) : (
               <LogOut size={18} />
